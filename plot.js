@@ -1,14 +1,151 @@
-var  "names":["940", "941", "943", "944", "945", "946", "947", "948", "949", "950", "952", "953", "954", "955", "956", "958", "959", "960", "961", "962", "963", "964", "966", "967", "968", "969", "970", "971", "972", "973", "974", "975", "978", "1233", "1234", "1235", "1236", "1237", "1238", "1242", "1243", "1246", "1253", "1254", "1258", "1259", "1260", "1264", "1265", "1273", "1275", "1276", "1277", "1278", "1279", "1280", "1281", "1282", "1283", "1284", "1285", "1286", "1287", "1288", "1289", "1290", "1291", "1292", "1293", "1294", "1295", "1296", "1297", "1298", "1308", "1309", "1310", "1374", "1415", "1439", "1441", "1443", "1486", "1487", "1489", "1490", "1491", "1494", "1495", "1497", "1499", "1500", "1501", "1502", "1503", "1504", "1505", "1506", "1507", "1508", "1510", "1511", "1512", "1513", "1514", "1515", "1516", "1517", "1518", "1519", "1521", "1524", "1526", "1527", "1530", "1531", "1532", "1533", "1534", "1535", "1536", "1537", "1539", "1540", "1541", "1542", "1543", "1544", "1545", "1546", "1547", "1548", "1549", "1550", "1551", "1552", "1553", "1554", "1555", "1556", "1557", "1558", "1561", "1562", "1563", "1564", "1572", "1573", "1574", "1576", "1577", "1581", "1601"]
-//array to store html to add to the select list
-var html = [];
+// create the function that gets the data and creates the plots for the id 
+function buildPlot(id) {
+    
+    // get the data from the json file
+    d3.json("samples.json").then((data)=> {
+        console.log(data)
 
-//loop through the array
-for (var i = 0; i < names.length; i++) {//begin for loop
-  
-  //add the option elements to the html array
-  html.push("<option>" + names[i] + "</option>")
-  
-}//end for loop
+     // filter sample values by id 
+        var vals = data.samples.filter(vals => vals.id == id)[0];
 
-//add the option values to the select list with an id of sex
-document.getElementById("names").innerHTML = html.join("");
+        console.log(values);
+
+        // get only top 10 sample values to plot and reverse for the plotly
+        var sampleValues = vals.sample_values.slice(0, 10).reverse();
+
+        // get only top 10 otu ids for the plot
+        var idValues = (vals.otu_ids.slice(0, 10)).reverse();
+        
+        // get the otu id's to the desired form for the plot
+        var idOtu = idValues.map(d => "OTU " + d)
+
+        console.log(`OTU IDS: ${idOtu}`)
+
+        // get the top 10 labels for the plot
+        var labels = vals.otu_labels.slice(0, 10);
+
+        console.log(`Sample Values: ${sampleValues}`)
+        console.log(`Id Values: ${idValues}`)
+
+        
+        // create trace variable for the plot
+        var trace = {
+            x: sampleValues,
+            y: idOtu,
+            text: labels,
+            type:"bar",
+            orientation: "h",
+        };
+
+        // create data variable
+        var data = [trace];
+
+        // create layout variable to set plots layout
+        var layout = {
+            title: "Top 10 OTU",
+            yaxis:{
+                tickmode:"linear",
+            },
+            margin: {
+                l: 100,
+                r: 100,
+                t: 30,
+                b: 20
+            }
+        };
+
+        // create the bar plot
+        Plotly.newPlot("bar", data, layout);
+
+        
+        // create the trace for the bubble chart
+        var trace1 = {
+            x: vals.otu_ids,
+            y: vals.sample_values,
+            mode: "markers",
+            marker: {
+                size: vals.sample_values,
+                color: vals.otu_ids
+            },
+            text: vals.otu_labels
+
+        };
+
+        // set the layout for the bubble plot
+        var layout = {
+            xaxis:{title: "OTU ID"},
+            height: 600,
+            width: 1300
+        };
+
+        // create the data variable 
+        var data1 = [trace1];
+
+        // create the bubble plot
+        Plotly.newPlot("bubble", data1, layout); 
+
+        // create pie chart
+        var tracePie = {
+            labels: idOtu,
+            values:sampleValues,
+            type:"pie",
+        }
+
+        var data = [tracePie]
+        
+        
+        Plotly.newPlot("gauge", data)
+
+    });    
+}
+    
+// create the function to get the necessary data
+function demo(id) {
+    // read the json file to get data
+    d3.json("samples.json").then((data)=> {
+        
+        // get the metadata info for the demographic panel
+        var metadata = data.metadata;
+
+        // filter meta data info by id
+        var result = metadata.filter(meta => meta.id == id)[0];
+
+        // select demographic panel to put data
+        var demographicInfo = d3.select("#sample-metadata");
+        
+        // empty the demographic info panel each time before getting new id info
+        demographicInfo.html("");
+
+        // grab the necessary demographic data data for the id and append the info to the panel
+        Object.entries(result).forEach((key) => {   
+            demographicInfo.append("h5").text(key[0].toUpperCase() + ": " + key[1] + "\n");   
+        });
+    });
+}
+
+// create the function for the change event
+function optionChanged(id) {
+    buildPlot(id);
+    demo(id);
+}
+
+// create the function for the initial data rendering
+function init() {
+    // select dropdown menu 
+    var dropdown = d3.select("#selDataset");
+
+    // read the data 
+    d3.json("samples.json").then((data)=> {
+
+        // get the id data to the dropdwown menu
+        data.names.forEach(function(name) {
+            dropdown.append("option").text(name).property("value");
+        });
+
+        // call the functions to display the data and the plots to the page
+        buildPlot(data.names[0]);
+        demo(data.names[0]);
+    });
+}
+
+init();

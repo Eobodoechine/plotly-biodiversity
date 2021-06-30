@@ -8,16 +8,14 @@ function buildPlot(id) {
      // filter sample values by id 
         var vals = data.samples.filter(vals => vals.id == id)[0];
 
-        console.log(values);
-
         // get only top 10 sample values to plot and reverse for the plotly
         var sampleValues = vals.sample_values.slice(0, 10).reverse();
 
         // get only top 10 otu ids for the plot
-        var idValues = (vals.otu_ids.slice(0, 10)).reverse();
+        var ids = (vals.otu_ids.slice(0, 10)).reverse();
         
         // get the otu id's to the desired form for the plot
-        var idOtu = idValues.map(d => "OTU " + d)
+        var idOtu = ids.map(d => "OTU " + d)
 
         console.log(`OTU IDS: ${idOtu}`)
 
@@ -25,7 +23,7 @@ function buildPlot(id) {
         var labels = vals.otu_labels.slice(0, 10);
 
         console.log(`Sample Values: ${sampleValues}`)
-        console.log(`Id Values: ${idValues}`)
+        console.log(`Id Values: ${ids}`)
 
         
         // create trace variable for the plot

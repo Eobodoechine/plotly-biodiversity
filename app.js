@@ -27,7 +27,7 @@ function buildPlot(id) {
 
         
         // create trace variable for the plot
-        var trace = {
+        var trace1 = {
             x: sampleValues,
             y: otu,
             text: labels,
@@ -36,7 +36,7 @@ function buildPlot(id) {
         };
 
         // create data variable
-        var data = [trace];
+        var data = [trace1];
 
         // create layout variable to set plots layout
         var layout = {
@@ -57,7 +57,7 @@ function buildPlot(id) {
 
         
         // create the trace for the bubble chart
-        var trace1 = {
+        var trace2 = {
             x: vals.otu_ids,
             y: vals.sample_values,
             mode: "markers",
@@ -77,19 +77,19 @@ function buildPlot(id) {
         };
 
         // create the data variable 
-        var data1 = [trace1];
+        var data1 = [trace2];
 
         // create the bubble plot
         Plotly.newPlot("bubble", data1, layout); 
 
         // create pie chart
-        var tracePie = {
+        var trace3 = {
             labels: otu,
             values:sampleValues,
             type:"pie",
         }
 
-        var data = [tracePie]
+        var data = [trace3]
         
         
         Plotly.newPlot("gauge", data)

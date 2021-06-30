@@ -15,9 +15,9 @@ function buildPlot(id) {
         var ids = (vals.otu_ids.slice(0, 10)).reverse();
         
         // get the otu id's to the desired form for the plot
-        var idOtu = ids.map(d => "OTU " + d)
+        var otu = ids.map(d => "OTU " + d)
 
-        console.log(`OTU IDS: ${idOtu}`)
+        console.log(`OTU IDS: ${otu}`)
 
         // get the top 10 labels for the plot
         var labels = vals.otu_labels.slice(0, 10);
@@ -29,7 +29,7 @@ function buildPlot(id) {
         // create trace variable for the plot
         var trace = {
             x: sampleValues,
-            y: idOtu,
+            y: otu,
             text: labels,
             type:"bar",
             orientation: "h",
@@ -40,7 +40,7 @@ function buildPlot(id) {
 
         // create layout variable to set plots layout
         var layout = {
-            title: "Top 10 OTU",
+            title: "HIGHEST 10 OTU",
             yaxis:{
                 tickmode:"linear",
             },
@@ -84,7 +84,7 @@ function buildPlot(id) {
 
         // create pie chart
         var tracePie = {
-            labels: idOtu,
+            labels: otu,
             values:sampleValues,
             type:"pie",
         }
